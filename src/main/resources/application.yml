@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: WeatherApp
+  cache:
+    cache-names: weatherData
+    type: simple
+    caffeine:
+      spec: maximumSize=10,expireAfterWrite=600s
+weather:
+  mode: ON_DEMAND
+  geo-url: http://api.openweathermap.org/geo/1.0/direct
+  weather-url: https://api.openweathermap.org/data/2.5/weather
