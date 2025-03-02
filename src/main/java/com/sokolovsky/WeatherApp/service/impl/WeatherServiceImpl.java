@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
+/**
+ * Core implementation of the Weather Service with caching and polling capabilities.
+ */
 @Service
 @Slf4j
 public class WeatherServiceImpl implements WeatherService {
@@ -64,6 +67,10 @@ public class WeatherServiceImpl implements WeatherService {
         log.info("Weather service initialized with API key");
     }
 
+    /**
+     * Gracefully shuts down the service and clears cache.
+     * If polling is enabled, stops the polling service.
+     */
     public void shutdown() {
         if (pollingService != null) {
             pollingService.stop();
@@ -71,6 +78,14 @@ public class WeatherServiceImpl implements WeatherService {
         cache.invalidateAll();
     }
 
+    /**
+     * Gets weather data for a specified city.
+     * First checks the cache, if not found or expired, fetches from API.
+     *
+     * @param city Name of the city
+     * @return Weather data for the city
+     * @throws WeatherApiException if city not found or API error occurs
+     */
     public WeatherDTO getWeatherData(String city) {
         String trimmedCity = city.trim();
 
@@ -81,16 +96,6 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         return fetchWeatherData(trimmedCity);
-    }
-
-    public void evictCache(String city) {
-        log.debug("Evicting cache for city: {}", city);
-        cache.invalidate(city);
-    }
-
-    public void evictAllCache() {
-        log.debug("Evicting all cache entries");
-        cache.invalidateAll();
     }
 
     private WeatherDTO fetchWeatherData(String city) {
@@ -133,10 +138,22 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
+    /**
+     * Returns a set of city names currently stored in cache.
+     *
+     * @return Set of cached city names
+     */
     public Set<String> getCachedCities() {
         return cache.asMap().keySet();
     }
 
+    /**
+     * Forces an update of weather data for a specific city.
+     * Bypasses cache and fetches fresh data from API.
+     *
+     * @param city Name of the city to update
+     * @throws WeatherApiException if update fails
+     */
     public void updateWeatherData(String city) {
         fetchWeatherData(city);
     }

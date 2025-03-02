@@ -9,6 +9,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
+/**
+ * Implementation of automatic weather data polling service.
+ * Updates weather data for all cached cities at fixed intervals.
+ */
 @Slf4j
 public class WeatherPollingServiceImpl implements WeatherPollingService {
     private final WeatherService weatherService;
@@ -20,12 +24,20 @@ public class WeatherPollingServiceImpl implements WeatherPollingService {
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
+    /**
+     * Starts scheduled weather data updates.
+     * Updates occur every 10 minutes for all cached cities.
+     */
     public void start() {
         scheduler.scheduleAtFixedRate(this::updateWeatherData, 
             0, POLLING_INTERVAL, TimeUnit.MINUTES);
         log.info("Weather polling service started");
     }
 
+    /**
+     * Gracefully stops the polling service.
+     * Ensures all pending tasks are completed or cancelled.
+     */
     public void stop() {
         scheduler.shutdown();
         try {
@@ -39,6 +51,10 @@ public class WeatherPollingServiceImpl implements WeatherPollingService {
         log.info("Weather polling service stopped");
     }
 
+    /**
+     * Internal method to update weather data for all cached cities.
+     * Handles errors for individual cities without stopping the entire update process.
+     */
     private void updateWeatherData() {
         try {
             Set<String> cities = weatherService.getCachedCities();
