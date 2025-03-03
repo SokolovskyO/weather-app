@@ -6,12 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * Global exception handler for Weather API endpoints.
  * Provides consistent error responses across the application.
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class WeatherExceptionHandler {
 
     /**
